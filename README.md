@@ -55,4 +55,4 @@ The dataset contains 8 tables:
 - Master of Business Analytics, Iowa State University (May 2026)
 
 ## Related Projects
-- [Olist E-Commerce Tableau Dashboard]([https://public.tableau.com/app/profile/your-profile](https://public.tableau.com/app/profile/anirudh.rajanna2985/viz/OlistE-CommercePerformanceAnalysis/OlistE-CommerceAnalysis)) - Interactive visualization of the same dataset
+- [Olist E-Commerce Tableau Dashboard](https://public.tableau.com/app/profile/anirudh.rajanna2985/viz/OlistE-CommercePerformanceAnalysis/OlistE-CommerceAnalysis) - Interactive visualization of the same dataset
