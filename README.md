@@ -1,142 +1,58 @@
--- ============================================
--- OLIST E-COMMERCE SQL ANALYSIS
--- Author: Anirudh Rajanna
--- Dataset: Brazilian E-Commerce Public Dataset by Olist
--- ============================================
+# Olist E-Commerce SQL Analysis
 
--- ============================================
--- QUERY 1: Top 10 Product Categories by Revenue
--- Business Question: Which product categories generate the most revenue?
--- ============================================
+## Project Overview
+This project analyzes the Brazilian E-Commerce dataset from Olist, containing approximately 100,000 orders from 2016-2018. Using SQL, I explored sales performance, customer behavior, delivery operations, and payment patterns to extract actionable business insights.
 
-SELECT 
-    ct.product_category_name_english AS category,
-    ROUND(SUM(oi.price + oi.freight_value), 2) AS total_revenue,
-    COUNT(DISTINCT oi.order_id) AS total_orders
-FROM order_items oi
-JOIN products p ON oi.product_id = p.product_id
-JOIN category_translation ct ON p.product_category_name = ct.product_category_name
-GROUP BY ct.product_category_name_english
-ORDER BY total_revenue DESC
-LIMIT 10;
+## Dataset
+**Source:** [Kaggle - Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 
--- ============================================
--- QUERY 2: Monthly Revenue Trend
--- Business Question: How has revenue grown over time?
--- ============================================
+The dataset contains 8 tables:
+- **orders** - 99,441 orders with timestamps and delivery information
+- **order_items** - 112,650 items with pricing and seller details
+- **customers** - 99,441 customers with location data
+- **payments** - 103,886 payment records
+- **products** - 32,951 products with category information
+- **sellers** - 3,095 sellers with location data
+- **category_translation** - 71 category name translations (Portuguese to English)
 
-SELECT 
-    DATE_FORMAT(STR_TO_DATE(order_purchase_timestamp, '%Y-%m-%d %H:%i:%s'), '%Y-%m') AS month,
-    ROUND(SUM(oi.price + oi.freight_value), 2) AS total_revenue,
-    COUNT(DISTINCT o.order_id) AS total_orders
-FROM orders o
-JOIN order_items oi ON o.order_id = oi.order_id
-WHERE o.order_status = 'delivered'
-GROUP BY month
-ORDER BY month;
+## Key Business Questions Answered
 
--- ============================================
--- QUERY 3: Top 10 States by Revenue
--- Business Question: Which states contribute most to revenue?
--- ============================================
+### 1. Revenue Analysis
+- **Top Product Categories:** Health & Beauty leads with $1.44M in revenue, followed by Watches & Gifts ($1.31M) and Bed, Bath & Table ($1.24M)
+- **Geographic Performance:** São Paulo (SP) dominates with $5.92M in revenue (41,375 orders), followed by Rio de Janeiro (RJ) at $2.13M
 
-SELECT 
-    c.customer_state AS state,
-    ROUND(SUM(oi.price + oi.freight_value), 2) AS total_revenue,
-    COUNT(DISTINCT o.order_id) AS total_orders,
-    ROUND(AVG(oi.price + oi.freight_value), 2) AS avg_order_value
-FROM orders o
-JOIN order_items oi ON o.order_id = oi.order_id
-JOIN customers c ON o.customer_id = c.customer_id
-GROUP BY c.customer_state
-ORDER BY total_revenue DESC
-LIMIT 10;
+### 2. Customer Behavior
+- **Payment Preferences:** Credit cards account for 76,505 orders (76%) with an average of 3.5 installments per purchase
+- **Boleto (bank slip):** Second most popular with 19,784 orders
 
--- ============================================
--- QUERY 4: Payment Method Analysis
--- Business Question: How do customers prefer to pay?
--- ============================================
+### 3. Delivery Performance
+- **On-Time Delivery Rate:** 91.89% of orders delivered on time
+- **Late Deliveries:** 8.11% of orders delivered after estimated date
+- **Longest Delivery Times:** Roraima (RR) averages 29.3 days, likely due to remote location
 
-SELECT 
-    payment_type,
-    COUNT(DISTINCT order_id) AS total_orders,
-    ROUND(SUM(payment_value), 2) AS total_value,
-    ROUND(AVG(payment_value), 2) AS avg_payment,
-    ROUND(AVG(payment_installments), 1) AS avg_installments
-FROM payments
-GROUP BY payment_type
-ORDER BY total_orders DESC;
+### 4. Seller Insights
+- **Top Seller Revenue:** $249,640 from a seller in Guariba, SP
+- **Highest Average Price:** Seller from Lauro de Freitas, BA with $543 average product price
 
--- ============================================
--- QUERY 5: Top 10 Sellers by Revenue
--- Business Question: Who are the top performing sellers?
--- ============================================
+## Technical Skills Demonstrated
+- Complex SQL JOINs across multiple tables
+- Aggregate functions (SUM, COUNT, AVG)
+- Date manipulation and calculations
+- CASE statements for conditional logic
+- Window functions for percentage calculations
+- Data filtering and NULL handling
 
-SELECT 
-    s.seller_id,
-    s.seller_city,
-    s.seller_state,
-    COUNT(DISTINCT oi.order_id) AS total_orders,
-    ROUND(SUM(oi.price + oi.freight_value), 2) AS total_revenue,
-    ROUND(AVG(oi.price), 2) AS avg_product_price
-FROM sellers s
-JOIN order_items oi ON s.seller_id = oi.seller_id
-GROUP BY s.seller_id, s.seller_city, s.seller_state
-ORDER BY total_revenue DESC
-LIMIT 10;
+## Files
+- `olist_analysis.sql` - All SQL queries with business context and comments
 
--- ============================================
--- QUERY 6: Average Delivery Time by State
--- Business Question: Which states have the longest delivery times?
--- ============================================
+## Tools Used
+- MySQL 8.0
+- MySQL Workbench
 
-SELECT 
-    c.customer_state AS state,
-    COUNT(DISTINCT o.order_id) AS total_orders,
-    ROUND(AVG(DATEDIFF(o.order_delivered_customer_date, o.order_purchase_timestamp)), 1) AS avg_delivery_days
-FROM orders o
-JOIN customers c ON o.customer_id = c.customer_id
-WHERE o.order_status = 'delivered'
-    AND o.order_delivered_customer_date IS NOT NULL
-    AND o.order_delivered_customer_date != ''
-GROUP BY c.customer_state
-ORDER BY avg_delivery_days DESC;
+## Author
+**Anirudh Rajanna**
+- [LinkedIn](https://linkedin.com/in/anirudh-rajanna98)
+- Master of Business Analytics, Iowa State University (May 2026)
 
--- ============================================
--- QUERY 7: Late Delivery Analysis
--- Business Question: What percentage of orders are delivered late?
--- ============================================
-
-SELECT 
-    CASE 
-        WHEN order_delivered_customer_date <= order_estimated_delivery_date THEN 'On-Time'
-        WHEN order_delivered_customer_date > order_estimated_delivery_date THEN 'Late'
-        ELSE 'Unknown'
-    END AS delivery_status,
-    COUNT(*) AS total_orders,
-    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) AS percentage
-FROM orders
-WHERE order_status = 'delivered'
-    AND order_delivered_customer_date IS NOT NULL
-    AND order_delivered_customer_date != ''
-    AND order_estimated_delivery_date IS NOT NULL
-    AND order_estimated_delivery_date != ''
-GROUP BY delivery_status
-ORDER BY total_orders DESC;
-
--- ============================================
--- QUERY 8: Product Categories by Order Volume
--- Business Question: Which categories have the most orders?
--- ============================================
-
-SELECT 
-    ct.product_category_name_english AS category,
-    COUNT(DISTINCT oi.order_id) AS total_orders,
-    COUNT(oi.order_item_id) AS total_items_sold,
-    ROUND(AVG(oi.price), 2) AS avg_price
-FROM order_items oi
-JOIN products p ON oi.product_id = p.product_id
-JOIN category_translation ct ON p.product_category_name = ct.product_category_name
-GROUP BY ct.product_category_name_english
-ORDER BY total_orders DESC
-LIMIT 10;
+## Related Projects
+- [Olist E-Commerce Tableau Dashboard](https://public.tableau.com/app/profile/your-profile) - Interactive visualization of the same dataset
