@@ -49,6 +49,32 @@ The dataset contains 8 tables:
 - MySQL 8.0
 - MySQL Workbench
 
+## Python Analysis (Jupyter Notebook)
+
+### Additional Analysis Performed:
+- **Exploratory Data Analysis (EDA)** with pandas
+- **Data Visualization** using matplotlib and seaborn
+- **RFM Customer Segmentation** - Recency, Frequency, Monetary analysis
+
+### Customer Segments Identified:
+| Segment | Count | % of Total | Total Revenue |
+|---------|-------|------------|---------------|
+| New Customers | 38,481 | 40.0% | R$ 6.5M |
+| Can't Lose Them | 22,339 | 23.2% | R$ 5.4M |
+| Others | 19,012 | 19.8% | R$ 2.9M |
+| Lost | 16,017 | 16.7% | R$ 0.9M |
+| Champions | 34 | 0.04% | R$ 28.9K |
+
+### Business Recommendations:
+1. Focus retention campaigns on 'New Customers' to increase repeat purchases
+2. Re-engage 'Can't Lose Them' segment with personalized offers
+3. Expand logistics capacity in São Paulo (highest demand)
+4. Investigate delivery delays in remote states (RR, AP, AM)
+
+### Files
+- `olist_analysis.sql` - SQL queries with business context
+- `Olist_ECommerce_Analysis.ipynb` - Python analysis notebook  
+
 ## Author
 **Anirudh Rajanna**
 - [LinkedIn](https://linkedin.com/in/anirudh-rajanna98)
